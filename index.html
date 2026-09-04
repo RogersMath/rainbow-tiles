@@ -243,7 +243,6 @@ button.big{font:inherit;font-weight:800;border:2px solid var(--ink);background:t
     <div class=row><span>Direction arrows</span><button class=sw id=swh></button></div>
     <div class=row><span>Exact numbers</span><button class=sw id=swn></button></div>
     <button class="big sm ghost" id=restart>Abandon Run</button>
-    </div>
     <button class="big sm" id=close>Back to Work</button>
   </div></div>
 
@@ -347,10 +346,10 @@ const ROOMS = [
   { nm:'The Ember Room',       c:'Red',    dir:[ 1,-1,-1], w:[4,1,1], shw:[9,0,0], mg:1, sp:4,  rd:16, sw:'#e0546a' },
   { nm:'The Green Gallery',    c:'Green',  dir:[-1, 1,-1], w:[1,4,1], shw:[8,1,0], mg:2, sp:5,  rd:19, sw:'#4fae72' },
   { nm:'The Blue Landing',     c:'Blue',   dir:[-1,-1, 1], w:[1,1,4], shw:[7,2,0], mg:2, sp:6,  rd:21, sw:'#4d86d8' },
-  { nm:'The Orange Exchange',  c:'Orange', dir:[ 1, 1,-1], w:[3,2,3], shw:[6,2,1], mg:2, sp:7,  rd:20, sw:'#e08a3c' },
-  { nm:'The Yellow Chancery',  c:'Yellow', dir:[ 1, 1,-1], w:[2,2,3], shw:[5,3,1], mg:3, sp:7,  rd:24, sw:'#e0c04a' },
-  { nm:'The Indigo Vestibule', c:'Indigo', dir:[-1,-1, 1], w:[2,2,3], shw:[5,3,2], mg:3, sp:8,  rd:36, sw:'#4a4a9e' },
-  { nm:'The Violet Hall',      c:'Violet', dir:[ 1,-1, 1], w:[2,3,2], shw:[4,3,2], mg:3, sp:9,  rd:40, sw:'#a05ac0' }
+  { nm:'The Orange Exchange',  c:'Orange', dir:[ 1, 1,-1], w:[3,2,3], shw:[6,2,1], mg:2, sp:7,  rd:24, sw:'#e08a3c' },
+  { nm:'The Yellow Chancery',  c:'Yellow', dir:[ 1, 1,-1], w:[2,2,3], shw:[5,3,1], mg:3, sp:7,  rd:27, sw:'#e0c04a' },
+  { nm:'The Indigo Vestibule', c:'Indigo', dir:[-1,-1, 1], w:[2,2,3], shw:[5,3,2], mg:3, sp:8,  rd:30, sw:'#4a4a9e' },
+  { nm:'The Violet Hall',      c:'Violet', dir:[ 1,-1, 1], w:[2,3,2], shw:[4,3,2], mg:3, sp:9,  rd:33, sw:'#a05ac0' }
 ];
 const CHAN = ['R', 'G', 'B'];
 const CHANHUE = ['#e0546a', '#4fae72', '#4d86d8'];
@@ -473,7 +472,12 @@ const $ = id => document.getElementById(id);
 const err = i => { let e = 0; for (let c = 0; c < 3; c++) e = Math.max(e, Math.abs(board[i][c] - target[i][c])); return e; };
 const seated = i => err(i) <= TOL;
 const setCount = () => { let n = 0; for (let i = 0; i < 19; i++) if (seated(i)) n++; return n; };
-const totalErr = () => { let s = 0; for (let i = 0; i < 19; i++) s += err(i); return s; };
+/* Progress is measured across ALL THREE channels, not by each tile's
+   worst one. With max-per-tile, fixing one of two wrong channels moved
+   the number by zero: the player saw "\u00b10" on a correct cast, and
+   handHelps() called a hand dead while it held the needed card.
+   seated() still uses max, because tolerance is per-channel. */
+const totalErr = () => { let s = 0; for (let i = 0; i < 19; i++) for (let c = 0; c < 3; c++) s += Math.abs(board[i][c] - target[i][c]); return s; };
 
 function newRoom(n) {
   roomN = n;
@@ -990,7 +994,7 @@ function nextLine() {
     if (n >= fullLine.length) { clearInterval(typeTimer); typing = false; }
   }, 17);
 }
-$('txt').onclick = nextLine;
+$('dlg').onclick = nextLine;
 
 /* ================================================================
    JUICE
