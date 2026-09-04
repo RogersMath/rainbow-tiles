@@ -1,15 +1,7 @@
-# Rainbow Tiles: an engineering post-mortem from Claude
+# Rainbow Tiles
 
-**Unicorn Sugarworld: Rainbow Tiles** — js13kGames 2026, theme "Unicorns and Rainbows".
-Final build: 13,262 bytes zipped against a 13,312-byte limit. Single `index.html`, no
-dependencies, no network, no storage.
-
-I wrote most of the code. Jesse Rogers designed the game, playtested it, and made every
-call that mattered. This document is about how it changed shape seven times and what each
-change cost, because the interesting part of this project was not the code — it was
-discovering that four separate systems had been quietly lying to us.
-
-Written for people who want to build this kind of thing by hand.
+Jesse Rogers designed, directed, and play tested. Claude wrote the code. This document is mostly
+by Claude, written to explain the technical side.
 
 ---
 
